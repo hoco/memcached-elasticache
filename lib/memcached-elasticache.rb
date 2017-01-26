@@ -1,2 +1,2 @@
 # Support default bundler require path
-require 'dalli/elasticache'
+require 'memcached/elasticache'

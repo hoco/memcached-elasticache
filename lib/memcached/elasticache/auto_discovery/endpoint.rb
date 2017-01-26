@@ -1,4 +1,4 @@
-module Dalli
+class Memcached
   module Elasticache
     module AutoDiscovery
       class Endpoint

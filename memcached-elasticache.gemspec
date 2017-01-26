@@ -2,17 +2,17 @@
 lib = File.expand_path('../lib/', __FILE__)
 $:.unshift lib unless $:.include?(lib)
 
-require 'dalli/elasticache/version'
+require 'memcached/elasticache/version'
 
 Gem::Specification.new do |s|
-  s.name     = 'dalli-elasticache'
-  s.version  = Dalli::ElastiCache::VERSION
+  s.name     = 'memcached-elasticache'
+  s.version  = Memcached::ElastiCache::VERSION
   s.licenses = ['MIT']
   
-  s.summary     = "Configure Dalli clients with ElastiCache's AutoDiscovery"
+  s.summary     = "Configure memcached client (an interface to the libmemcached) with ElastiCache's AutoDiscovery"
   s.description = <<-EOS
     This gem provides an interface for fetching cluster information from an AWS
-    ElastiCache AutoDiscovery server and configuring a Dalli client to connect
+    ElastiCache AutoDiscovery server and configuring a memcached client to connect
     to all nodes in the cache cluster.
   EOS
   
@@ -30,5 +30,5 @@ Gem::Specification.new do |s|
   
   s.add_development_dependency 'rake'
   s.add_development_dependency 'rspec'
-  s.add_dependency 'dalli', ">= 1.0.0" # ??
+  s.add_dependency 'memcached', ">= 1.8.0" # ??
 end

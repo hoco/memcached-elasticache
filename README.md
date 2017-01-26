@@ -10,7 +10,7 @@ Install the [rubygem](https://rubygems.org/gems/dalli-elasticache):
 
 ```ruby
 # in your Gemfile
-gem 'dalli-elasticache'
+gem 'memcached'
 ```
 
 Setup for Rails 3.x and Newer
