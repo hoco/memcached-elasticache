@@ -5,7 +5,7 @@ require 'memcached/elasticache/auto_discovery/endpoint'
 require 'memcached/elasticache/auto_discovery/config_response'
 require 'memcached/elasticache/auto_discovery/stats_response'
 
-class Memcached
+module Memcached
   class ElastiCache
     attr_reader :endpoint, :options
     
@@ -14,7 +14,7 @@ class Memcached
       @options = options
       @refresh_interval = options[:refresh_interval] || 60
       @last_updated_at = Time.now
-      @client = Memcached.new(cluster_servers, @options)
+      @client = Memcached::Client.new(cluster_servers, @options)
     end
 
     def method_missing(method, *args, &block)
@@ -38,7 +38,11 @@ class Memcached
       old_endpoint = endpoint
       @endpoint = Memcached::Elasticache::AutoDiscovery::Endpoint.new("#{endpoint.host}:#{endpoint.port}")
 
-      @client.reset(cluster_servers) if old_endpoint.config != @endpoint.config
+      if old_endpoint.config.nodes != @endpoint.config.nodes
+        old_client = @client
+        @client = Memcached::Client.new(cluster_servers, @options)
+        old_client.reset
+      end
     end
   end
 end

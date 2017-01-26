@@ -1,4 +1,4 @@
-class Memcached
+module Memcached
   module Elasticache
     module AutoDiscovery
       

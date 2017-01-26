@@ -15,7 +15,7 @@ describe 'Memcached::ElastiCache::Endpoint' do
 
   before do
     Memcached::Elasticache::AutoDiscovery::Endpoint.any_instance.should_receive(:get_config_from_remote).and_return(response)
-    Memcached.should_receive(:new).and_return('dummy_client')
+    Memcached::Client.should_receive(:new).and_return('dummy_client')
   end
 
   describe '.new' do

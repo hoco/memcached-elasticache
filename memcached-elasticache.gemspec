@@ -30,5 +30,5 @@ Gem::Specification.new do |s|
   
   s.add_development_dependency 'rake'
   s.add_development_dependency 'rspec'
-  s.add_dependency 'memcached', ">= 1.8.0" # ??
+  s.add_dependency 'memcached', ">= 2.0.0.alpha" # ??
 end
