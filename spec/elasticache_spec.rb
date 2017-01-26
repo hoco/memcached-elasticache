@@ -13,6 +13,11 @@ describe 'Memcached::ElastiCache::Endpoint' do
   let(:config_text) { "CONFIG cluster 0 141\r\n12\nmycluster.0001.cache.amazonaws.com|10.112.21.1|11211 mycluster.0002.cache.amazonaws.com|10.112.21.2|11211 mycluster.0003.cache.amazonaws.com|10.112.21.3|11211\n\r\n" }
   let(:response) { Memcached::Elasticache::AutoDiscovery::ConfigResponse.new(config_text) }
 
+  before do
+    Memcached::Elasticache::AutoDiscovery::Endpoint.any_instance.should_receive(:get_config_from_remote).and_return(response)
+    Memcached.should_receive(:new).and_return('dummy_client')
+  end
+
   describe '.new' do
     it 'builds endpoint' do
       cache.endpoint.host.should == "my-cluster.cfg.use1.cache.amazonaws.com"
@@ -25,38 +30,7 @@ describe 'Memcached::ElastiCache::Endpoint' do
       cache.options[:compress].should == true
     end
   end
-  
-  describe '#client' do
-    it 'builds with node list'
-    it 'builds with options'
-  end
-  
-  describe '#servers' do
-    before { Memcached::Elasticache::AutoDiscovery::Endpoint.any_instance.should_receive(:get_config_from_remote).and_return(response) }
 
-    it 'lists addresses and ports' do
-      cache.servers.should == ["mycluster.0001.cache.amazonaws.com:11211", "mycluster.0002.cache.amazonaws.com:11211", "mycluster.0003.cache.amazonaws.com:11211"]
-    end
+  describe '#method_missing' do
   end
-  
-  describe '#version' do
-  end
-  
-  describe '#engine_version' do
-  end
-  
-  describe '#refresh' do
-    it 'clears endpoint configuration' do
-      stale_endpoint = cache.endpoint
-      cache.refresh.endpoint.should_not === stale_endpoint
-    end
-    
-    it 'builds endpoint with same configuration' do
-      stale_endpoint = cache.endpoint
-      cache.refresh
-      cache.endpoint.host.should == stale_endpoint.host
-      cache.endpoint.port.should == stale_endpoint.port
-    end
-  end
-  
 end
