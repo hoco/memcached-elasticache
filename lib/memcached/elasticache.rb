@@ -54,9 +54,8 @@ module Memcached
       @endpoint = Memcached::Elasticache::AutoDiscovery::Endpoint.new("#{endpoint.host}:#{endpoint.port}", @enable_legacy)
 
       if old_endpoint.config.nodes != @endpoint.config.nodes
-        old_client = @client
+        @client.reset
         @client = Memcached::Client.new(cluster_servers, @options)
-        old_client.reset
       end
     end
   end
