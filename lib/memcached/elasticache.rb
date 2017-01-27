@@ -8,11 +8,12 @@ require 'memcached/elasticache/auto_discovery/stats_response'
 module Memcached
   class ElastiCache
     attr_reader :endpoint, :options
-    
+
     def initialize(config_endpoint, options={})
       @endpoint = Memcached::Elasticache::AutoDiscovery::Endpoint.new(config_endpoint)
       @options = options
       @refresh_interval = options[:refresh_interval] || 60
+      @max_retry_count = options[:max_retry_count] || 1
       @last_updated_at = Time.now
       @client = Memcached::Client.new(cluster_servers, @options)
     end
@@ -22,7 +23,19 @@ module Memcached
         @last_updated_at = Time.now
         refresh
       end
-      @client.public_send(method, *args)
+
+      retry_count = 0
+      begin
+        @client.public_send(method, *args)
+      rescue Memcached::ConnectionFailure => e
+        if retry_count < @max_retry_count
+          retry_count += 1
+          refresh
+          retry
+        else
+          raise e
+        end
+      end
     end
 
     private
@@ -30,7 +43,7 @@ module Memcached
     # List of cluster server nodes with ip addresses and ports
     # Always use host name instead of private elasticache IPs as internal IPs can change after a node is rebooted
     def cluster_servers
-      endpoint.config.nodes.map{ |h| "#{h[:host]}:#{h[:port]}" }
+      endpoint.config.nodes.map { |h| "#{h[:host]}:#{h[:port]}" }
     end
 
     # Refresh list of cache nodes and their connections
