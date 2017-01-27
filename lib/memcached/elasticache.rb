@@ -10,11 +10,13 @@ module Memcached
     attr_reader :endpoint, :options
 
     def initialize(config_endpoint, options={})
-      @endpoint = Memcached::Elasticache::AutoDiscovery::Endpoint.new(config_endpoint)
+      @refresh_interval = options.delete(:refresh_interval) || 60
+      @max_retry_count = options.delete(:max_retry_count) || 1
+      @enable_legacy_ec = options.delete(:enable_legacy_ec) || false
       @options = options
-      @refresh_interval = options[:refresh_interval] || 60
-      @max_retry_count = options[:max_retry_count] || 1
+
       @last_updated_at = Time.now
+      @endpoint = Memcached::Elasticache::AutoDiscovery::Endpoint.new(config_endpoint, @enable_legacy_ec)
       @client = Memcached::Client.new(cluster_servers, @options)
     end
 
@@ -49,7 +51,7 @@ module Memcached
     # Refresh list of cache nodes and their connections
     def refresh
       old_endpoint = endpoint
-      @endpoint = Memcached::Elasticache::AutoDiscovery::Endpoint.new("#{endpoint.host}:#{endpoint.port}")
+      @endpoint = Memcached::Elasticache::AutoDiscovery::Endpoint.new("#{endpoint.host}:#{endpoint.port}", @enable_legacy)
 
       if old_endpoint.config.nodes != @endpoint.config.nodes
         old_client = @client
