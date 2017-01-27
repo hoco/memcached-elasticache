@@ -7,7 +7,7 @@ require 'memcached/elasticache/auto_discovery/stats_response'
 
 module Memcached
   class ElastiCache
-    attr_reader :endpoint, :options
+    attr_reader :endpoint, :options, :client
 
     def initialize(config_endpoint, options={})
       @refresh_interval = options.delete(:refresh_interval) || 60
