@@ -7,7 +7,7 @@ require 'memcached/elasticache/auto_discovery/stats_response'
 
 module Memcached
   class ElastiCache
-    attr_reader :endpoint, :options, :client
+    attr_reader :endpoint, :options
 
     def initialize(config_endpoint, options={})
       @refresh_interval = options.delete(:refresh_interval) || 60
@@ -40,6 +40,15 @@ module Memcached
       end
     end
 
+    def clone
+      options = @options.dup.merge(
+        refresh_interval: @refresh_interval,
+        max_retry_count: @max_retry_count,
+        enable_legacy_ec: @enable_legacy_ec
+      )
+      Memcached::ElastiCache.new(config_endpoint, options)
+    end
+
     private
 
     # List of cluster server nodes with ip addresses and ports
@@ -51,12 +60,16 @@ module Memcached
     # Refresh list of cache nodes and their connections
     def refresh
       old_endpoint = endpoint
-      @endpoint = Memcached::Elasticache::AutoDiscovery::Endpoint.new("#{endpoint.host}:#{endpoint.port}", @enable_legacy)
+      @endpoint = Memcached::Elasticache::AutoDiscovery::Endpoint.new(config_endpoint, @enable_legacy)
 
       if old_endpoint.config.nodes != @endpoint.config.nodes
         @client.reset
         @client = Memcached::Client.new(cluster_servers, @options)
       end
+    end
+
+    def config_endpoint
+      "#{endpoint.host}:#{endpoint.port}"
     end
   end
 end

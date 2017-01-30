@@ -23,9 +23,9 @@ describe 'Memcached::ElastiCache::Endpoint' do
   describe '.new' do
     let(:options) {
       {
-        :expires_in => 24*60*60,
-        :namespace => "my_app",
-        :compress => true
+        expires_in: 24*60*60,
+        namespace: 'my_app',
+        compress: true
       }
     }
     it 'builds endpoint' do
@@ -86,6 +86,33 @@ describe 'Memcached::ElastiCache::Endpoint' do
       it 'raises error' do
         expect { subject }.to raise_error(Memcached::ConnectionFailure)
       end
+    end
+  end
+
+  describe '#clone' do
+    subject { cache.clone }
+
+    let(:client_options) {
+      {
+        expires_in: 24*60*60,
+        namespace: 'my_app',
+        compress: true
+      }
+    }
+    let(:ec_options) {
+      {
+        refresh_interval: 10,
+        max_retry_count: 5,
+        enable_legacy_ec: true
+      }
+    }
+    let(:options) { client_options.merge ec_options }
+
+    it 'clones client has same options' do
+      expect(subject.options).to eq client_options
+      expect(subject.instance_variable_get(:@refresh_interval)).to eq ec_options[:refresh_interval]
+      expect(subject.instance_variable_get(:@max_retry_count)).to eq ec_options[:max_retry_count]
+      expect(subject.instance_variable_get(:@enable_legacy_ec)).to eq ec_options[:enable_legacy_ec]
     end
   end
 end
