@@ -48,8 +48,7 @@ describe 'Memcached::Elasticache::Endpoint' do
     let(:ec_options) {
       {
         refresh_interval: 10,
-        max_retry_count: 5,
-        enable_legacy_ec: true
+        max_retry_count: 5
       }
     }
     let(:options) { client_options.merge ec_options }
@@ -58,7 +57,6 @@ describe 'Memcached::Elasticache::Endpoint' do
       expect(subject.options).to eq client_options
       expect(subject.instance_variable_get(:@refresh_interval)).to eq ec_options[:refresh_interval]
       expect(subject.instance_variable_get(:@max_retry_count)).to eq ec_options[:max_retry_count]
-      expect(subject.instance_variable_get(:@enable_legacy_ec)).to eq ec_options[:enable_legacy_ec]
       expect(subject.instance_variable_get(:@default_ttl)).to eq client_options[:ttl]
     end
   end

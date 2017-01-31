@@ -13,20 +13,18 @@ module Memcached
       def initialize(config_endpoint, options={})
         @refresh_interval = options.delete(:refresh_interval) || 60
         @max_retry_count = options.delete(:max_retry_count) || 1
-        @enable_legacy_ec = options.delete(:enable_legacy_ec) || false
         @default_ttl = options[:ttl] || 0
         @options = options
 
         @last_updated_at = Time.now
-        @endpoint = Memcached::Elasticache::AutoDiscovery::Endpoint.new(config_endpoint, @enable_legacy_ec)
+        @endpoint = Memcached::Elasticache::AutoDiscovery::Endpoint.new(config_endpoint)
         @client = Memcached::Client.new(cluster_servers, @options)
       end
 
       def clone
         options = @options.dup.merge(
           refresh_interval: @refresh_interval,
-          max_retry_count: @max_retry_count,
-          enable_legacy_ec: @enable_legacy_ec
+          max_retry_count: @max_retry_count
         )
         Memcached::Elasticache::Client.new(config_endpoint, options)
       end
@@ -124,7 +122,7 @@ module Memcached
       # Refresh list of cache nodes and their connections
       def refresh
         old_endpoint = endpoint
-        @endpoint = Memcached::Elasticache::AutoDiscovery::Endpoint.new(config_endpoint, @enable_legacy)
+        @endpoint = Memcached::Elasticache::AutoDiscovery::Endpoint.new(config_endpoint)
 
         if old_endpoint.config.nodes != @endpoint.config.nodes
           @client.reset

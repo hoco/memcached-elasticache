@@ -12,15 +12,12 @@ module Memcached
 
         STATS_COMMAND  = "stats\r\n"
         CONFIG_COMMAND = "config get cluster\r\n"
-        # Legacy command for version < 1.4.14
-        OLD_CONFIG_COMMAND = "get AmazonElastiCache:cluster\r\n"
 
-        def initialize(endpoint, enable_legacy_ec)
+        def initialize(endpoint)
           ENDPOINT_REGEX.match(endpoint) do |m|
             @host = m[1]
             @port = m[2].to_i
           end
-          @enable_legacy_ec = enable_legacy_ec
         end
 
         # A cached ElastiCache::StatsResponse
@@ -50,11 +47,7 @@ module Memcached
         end
 
         def get_config_from_remote
-          if @enable_legacy_ec && engine_version < Gem::Version.new("1.4.14")
-            data = remote_command(OLD_CONFIG_COMMAND)
-          else
-            data = remote_command(CONFIG_COMMAND)
-          end
+          data = remote_command(CONFIG_COMMAND)
           ConfigResponse.new(data)
         end
 

@@ -2,7 +2,7 @@ require_relative 'spec_helper'
 
 describe 'Memcached::Elasticache::AutoDiscovery::Endpoint' do
   let(:endpoint) do
-    Memcached::Elasticache::AutoDiscovery::Endpoint.new("my-cluster.cfg.use1.cache.amazonaws.com:11211", false)
+    Memcached::Elasticache::AutoDiscovery::Endpoint.new("my-cluster.cfg.use1.cache.amazonaws.com:11211")
   end
 
   describe '.new' do
