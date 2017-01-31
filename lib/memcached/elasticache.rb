@@ -10,6 +10,11 @@ module Memcached
     class Client
       attr_reader :endpoint, :options
 
+      # Initialize ElastiCache client
+      # @param [String] config_endpoint ElastiCache config endpoint strings like "my-host.cache.aws.com:11211"
+      # @option [Integer] :refresh_interval second-scale interval of refreshing cluster endpoints
+      # @option [Integer] :max_retry_count max retry times to command and refresh cluster endpoints
+      # @option [Integer] :ttl default TTL used by Memcached::Client
       def initialize(config_endpoint, options={})
         @refresh_interval = options.delete(:refresh_interval) || 60
         @max_retry_count = options.delete(:max_retry_count) || 1
