@@ -1,4 +1,4 @@
-module Dalli
+module Memcached
   module Elasticache
     module AutoDiscovery
       
