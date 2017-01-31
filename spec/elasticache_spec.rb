@@ -1,8 +1,8 @@
 require_relative 'spec_helper'
 require 'ostruct'
 
-describe 'Memcached::ElastiCache::Endpoint' do
-  let(:client) { Memcached::ElastiCache.new("my-cluster.cfg.use1.cache.amazonaws.com:11211", options) }
+describe 'Memcached::Elasticache::Endpoint' do
+  let(:client) { Memcached::Elasticache::Client.new("my-cluster.cfg.use1.cache.amazonaws.com:11211", options) }
 
   let(:config_text) { "CONFIG cluster 0 141\r\n12\nmycluster.0001.cache.amazonaws.com|10.112.21.1|11211 mycluster.0002.cache.amazonaws.com|10.112.21.2|11211 mycluster.0003.cache.amazonaws.com|10.112.21.3|11211\n\r\n" }
   let(:response) { Memcached::Elasticache::AutoDiscovery::ConfigResponse.new(config_text) }
