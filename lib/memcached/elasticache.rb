@@ -85,10 +85,6 @@ module Memcached
         @client.namespace
       end
 
-      def namespace=(value)
-        @client.namespace = value
-      end
-
       def touch(key, ttl = @default_ttl)
         refresh_with { @client.touch(key, ttl) }
       end

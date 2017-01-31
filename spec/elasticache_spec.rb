@@ -237,16 +237,6 @@ describe 'Memcached::Elasticache::Endpoint' do
       end
     end
 
-    describe '#namespace=' do
-      let(:name) { 'foo' }
-      subject { client.namespace = name }
-
-      it 'calls memcached #namespace' do
-        expect(m_client).to receive(:namespace=).with(name)
-        subject
-      end
-    end
-
     describe '#touch' do
       subject { client.touch(key, ttl) }
 
