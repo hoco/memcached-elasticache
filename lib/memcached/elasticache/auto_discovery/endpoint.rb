@@ -13,11 +13,12 @@ module Memcached
         STATS_COMMAND  = "stats\r\n"
         CONFIG_COMMAND = "config get cluster\r\n"
 
-        def initialize(endpoint)
+        def initialize(endpoint, options)
           ENDPOINT_REGEX.match(endpoint) do |m|
             @host = m[1]
             @port = m[2].to_i
           end
+          @options = options
         end
 
         # A cached ElastiCache::StatsResponse
@@ -47,8 +48,13 @@ module Memcached
         end
 
         def get_config_from_remote
-          data = remote_command(CONFIG_COMMAND)
-          ConfigResponse.new(data)
+          if @options[:local_mode]
+            # IP address is not used
+            ConfigResponse.new("#{@host}|0.0.0.0|#{@port}")
+          else
+            data = remote_command(CONFIG_COMMAND)
+            ConfigResponse.new(data)
+          end
         end
 
         # Send an ASCII command to the endpoint

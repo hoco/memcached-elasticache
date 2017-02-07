@@ -14,22 +14,25 @@ module Memcached
       # @param [String] config_endpoint ElastiCache config endpoint strings like "my-host.cache.aws.com:11211"
       # @option [Integer] :refresh_interval second-scale interval of refreshing cluster endpoints
       # @option [Integer] :max_retry_count max retry times to command and refresh cluster endpoints
+      # @option [Boolean] :local_mode if local_mode is true, the client always treats the config endpoint as the only cluster endpoint (for non-ElastiCache memcached)
       # @option [Integer] :ttl default TTL used by Memcached::Client
       def initialize(config_endpoint, options={})
         @refresh_interval = options.delete(:refresh_interval) || 60
         @max_retry_count = options.delete(:max_retry_count) || 1
+        @local_mode = options.delete(:local_mode) || false
         @default_ttl = options[:ttl] || 0
         @options = options
 
         @last_updated_at = Time.now
-        @endpoint = Memcached::Elasticache::AutoDiscovery::Endpoint.new(config_endpoint)
+        @endpoint = Memcached::Elasticache::AutoDiscovery::Endpoint.new(config_endpoint, endpoint_options)
         @client = Memcached::Client.new(cluster_servers, @options)
       end
 
       def clone
         options = @options.dup.merge(
           refresh_interval: @refresh_interval,
-          max_retry_count: @max_retry_count
+          max_retry_count: @max_retry_count,
+          local_mode: @local_mode
         )
         Memcached::Elasticache::Client.new(config_endpoint, options)
       end
@@ -127,7 +130,7 @@ module Memcached
       # Refresh list of cache nodes and their connections
       def refresh
         old_endpoint = endpoint
-        @endpoint = Memcached::Elasticache::AutoDiscovery::Endpoint.new(config_endpoint)
+        @endpoint = Memcached::Elasticache::AutoDiscovery::Endpoint.new(config_endpoint, endpoint_options)
 
         if old_endpoint.config.nodes != @endpoint.config.nodes
           @client.reset
@@ -137,6 +140,10 @@ module Memcached
 
       def config_endpoint
         "#{endpoint.host}:#{endpoint.port}"
+      end
+
+      def endpoint_options
+        { local_mode: @local_mode }
       end
     end
   end
