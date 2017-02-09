@@ -4,8 +4,8 @@ describe 'Memcached::Elasticache::AutoDiscovery::Endpoint' do
   let(:endpoint) { Memcached::Elasticache::AutoDiscovery::Endpoint.new("#{host}:#{port}", options) }
   let(:host) { 'my-cluster.cfg.use1.cache.amazonaws.com' }
   let(:port) { 11211 }
-  let(:options) { { local_mode: local_mode } }
-  let(:local_mode) { false }
+  let(:options) { { standalone_mode: standalone_mode } }
+  let(:standalone_mode) { false }
 
   describe '.new' do
     it 'parses host' do
@@ -19,8 +19,8 @@ describe 'Memcached::Elasticache::AutoDiscovery::Endpoint' do
   describe '#config' do
     subject { endpoint.config }
 
-    context 'local_mode' do
-      let(:local_mode) { true }
+    context 'standalone_mode' do
+      let(:standalone_mode) { true }
 
       it 'returns config endpoint as the only cluster endpoint' do
         expect(subject.nodes).to eq [
@@ -32,8 +32,8 @@ describe 'Memcached::Elasticache::AutoDiscovery::Endpoint' do
         ]
       end
     end
-    context 'not local_mode' do
-      let(:local_mode) { false }
+    context 'not standalone_mode' do
+      let(:standalone_mode) { false }
 
       it 'calls remote command' do
         expect(endpoint).to receive(:remote_command).

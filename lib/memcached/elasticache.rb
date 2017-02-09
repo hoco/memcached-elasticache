@@ -14,12 +14,12 @@ module Memcached
       # @param [String] config_endpoint ElastiCache config endpoint strings like "my-host.cache.aws.com:11211"
       # @option [Integer] :refresh_interval second-scale interval of refreshing cluster endpoints
       # @option [Integer] :max_retry_count max retry times to command and refresh cluster endpoints
-      # @option [Boolean] :local_mode if local_mode is true, the client always treats the config endpoint as the only cluster endpoint (for non-ElastiCache memcached)
+      # @option [Boolean] :standalone_mode if standalone_mode is true, the client treats config_endpoint as standard memcached server (NO require ElastiCache endpoint). It is useful during development.
       # @option [Integer] :ttl default TTL used by Memcached::Client
       def initialize(config_endpoint, options={})
         @refresh_interval = options.delete(:refresh_interval) || 60
         @max_retry_count = options.delete(:max_retry_count) || 1
-        @local_mode = options.delete(:local_mode) || false
+        @standalone_mode = options.delete(:standalone_mode) || false
         @default_ttl = options[:ttl] || 0
         @options = options
 
@@ -32,7 +32,7 @@ module Memcached
         options = @options.dup.merge(
           refresh_interval: @refresh_interval,
           max_retry_count: @max_retry_count,
-          local_mode: @local_mode
+          standalone_mode: @standalone_mode
         )
         Memcached::Elasticache::Client.new(config_endpoint, options)
       end
@@ -143,7 +143,7 @@ module Memcached
       end
 
       def endpoint_options
-        { local_mode: @local_mode }
+        { standalone_mode: @standalone_mode }
       end
     end
   end

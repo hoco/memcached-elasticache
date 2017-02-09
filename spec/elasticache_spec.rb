@@ -49,7 +49,7 @@ describe 'Memcached::Elasticache::Endpoint' do
       {
         refresh_interval: 10,
         max_retry_count: 5,
-        local_mode: true
+        standalone_mode: true
       }
     }
     let(:options) { client_options.merge ec_options }
@@ -58,7 +58,7 @@ describe 'Memcached::Elasticache::Endpoint' do
       expect(subject.options).to eq client_options
       expect(subject.instance_variable_get(:@refresh_interval)).to eq ec_options[:refresh_interval]
       expect(subject.instance_variable_get(:@max_retry_count)).to eq ec_options[:max_retry_count]
-      expect(subject.instance_variable_get(:@local_mode)).to eq ec_options[:local_mode]
+      expect(subject.instance_variable_get(:@standalone_mode)).to eq ec_options[:standalone_mode]
       expect(subject.instance_variable_get(:@default_ttl)).to eq client_options[:ttl]
     end
   end

@@ -48,7 +48,7 @@ module Memcached
         end
 
         def get_config_from_remote
-          if @options[:local_mode]
+          if @options[:standalone_mode]
             # IP address is not used
             ConfigResponse.new("#{@host}|0.0.0.0|#{@port}")
           else
