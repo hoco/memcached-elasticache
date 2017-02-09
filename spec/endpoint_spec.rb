@@ -3,6 +3,7 @@ require_relative 'spec_helper'
 describe 'Memcached::Elasticache::AutoDiscovery::Endpoint' do
   let(:endpoint) { Memcached::Elasticache::AutoDiscovery::Endpoint.new("#{host}:#{port}", options) }
   let(:host) { 'my-cluster.cfg.use1.cache.amazonaws.com' }
+  let(:ip) { '123.123.123.123' }
   let(:port) { 11211 }
   let(:options) { { standalone_mode: standalone_mode } }
   let(:standalone_mode) { false }
@@ -19,6 +20,10 @@ describe 'Memcached::Elasticache::AutoDiscovery::Endpoint' do
   describe '#config' do
     subject { endpoint.config }
 
+    before do
+      allow(IPSocket).to receive(:getaddress).with(host).and_return(ip)
+    end
+
     context 'standalone_mode' do
       let(:standalone_mode) { true }
 
@@ -26,7 +31,7 @@ describe 'Memcached::Elasticache::AutoDiscovery::Endpoint' do
         expect(subject.nodes).to eq [
           {
             host: host,
-            ip:  '0.0.0.0',
+            ip: ip,
             port: port
           }
         ]
